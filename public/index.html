@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -1304,7 +1304,7 @@ footer {
 }
 </style>
 
-<!-- ═══ DARK THEME═══ -->
+<!-- ═══ DARK THEME — only additions, nothing else changed ═══ -->
 <style>
 /* Smooth colour transitions when theme switches */
 body, nav, section, footer,
@@ -1463,11 +1463,122 @@ h1, h2, p, span, a, li, label, button {
   background: #1C242F;
   border-color: rgba(232,238,245,0.10);
 }
+
+/* ══════════════════════════════════════
+   HERO VIDEO BACKGROUND
+══════════════════════════════════════ */
+#home { position: relative; overflow: hidden; }
+
+.hero-video-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero-video-bg video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/*
+  Directional fade overlay:
+  - LEFT  → solid page colour  (content is fully readable)
+  - RIGHT → transparent        (video is fully visible, no fog)
+*/
+.hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to right,
+    var(--page)                  0%,
+    var(--page)                 28%,
+    rgba(246,241,232,0.92)      40%,
+    rgba(246,241,232,0.60)      54%,
+    rgba(246,241,232,0.18)      68%,
+    transparent                100%
+  );
+}
+[data-theme="dark"] .hero-video-overlay {
+  background: linear-gradient(
+    to right,
+    #0F1318                     0%,
+    #0F1318                    28%,
+    rgba(15,19,24,0.92)        40%,
+    rgba(15,19,24,0.60)        54%,
+    rgba(15,19,24,0.18)        68%,
+    transparent               100%
+  );
+}
+
+/* Content sits above both layers */
+.hero-layout { position: relative; z-index: 2; }
+
+/* Single-column — photo removed, content LEFT-aligned, capped width */
+#home .hero-layout {
+  grid-template-columns: 1fr !important;
+  max-width: 520px !important;
+  gap: 0 !important;
+  margin-left: 0 !important;   /* pin to left, do not auto-centre */
+  margin-right: auto !important;
+}
+
+/* Hide decorative pseudo-elements — video replaces them */
+#home .hero-grid,
+#home .hero-glow { display: none !important; }
+
+/*
+  Smooth fade: many stops so the transition curves naturally
+  Solid from 0→15%, then gently dissolves, fully clear by 48%
+*/
+.hero-video-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(246,241,232,1.00)   0%,
+    rgba(246,241,232,1.00)  15%,
+    rgba(246,241,232,0.97)  20%,
+    rgba(246,241,232,0.90)  25%,
+    rgba(246,241,232,0.78)  30%,
+    rgba(246,241,232,0.60)  35%,
+    rgba(246,241,232,0.40)  39%,
+    rgba(246,241,232,0.20)  43%,
+    rgba(246,241,232,0.07)  46%,
+    rgba(246,241,232,0.00)  50%
+  );
+}
+[data-theme="dark"] .hero-video-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(15,19,24,1.00)   0%,
+    rgba(15,19,24,1.00)  15%,
+    rgba(15,19,24,0.97)  20%,
+    rgba(15,19,24,0.90)  25%,
+    rgba(15,19,24,0.78)  30%,
+    rgba(15,19,24,0.60)  35%,
+    rgba(15,19,24,0.40)  39%,
+    rgba(15,19,24,0.20)  43%,
+    rgba(15,19,24,0.07)  46%,
+    rgba(15,19,24,0.00)  50%
+  );
+}
+
+/* On mobile: full solid overlay (no room for split) */
+@media (max-width: 768px) {
+  .hero-video-overlay {
+    background: rgba(246,241,232,0.82) !important;
+  }
+  [data-theme="dark"] .hero-video-overlay {
+    background: rgba(15,19,24,0.84) !important;
+  }
+  #home .hero-layout {
+    max-width: 100% !important;
+  }
+}
 </style>
 </head>
 <body>
 
-<!-- NAV  -->
+<!-- NAV — identical to yours, only added theme-toggle before nav-cta -->
 <nav id="navbar">
   <a href="#home" class="nav-logo"><span>^_~</span></a>
   <ul class="nav-links" id="navLinks">
@@ -1491,8 +1602,21 @@ h1, h2, p, span, a, li, label, button {
 
 <!-- HERO -->
 <section id="home">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
+
+  <!-- ░░ VIDEO BACKGROUND — replace src with your video URL ░░ -->
+  <div class="hero-video-bg">
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      src="./Assets/HeroBanner.mp4"
+    ></video>
+  </div>
+  <div class="hero-video-overlay"></div>
+  
+
   <div class="hero-layout">
     <div class="hero-left">
       <div class="hero-tag">Java Backend Engineer</div>
@@ -1509,24 +1633,10 @@ h1, h2, p, span, a, li, label, button {
         <a href="#contact" class="btn-secondary" onclick="smoothTo('contact')">Get in touch</a>
       </div>
     </div>
-    <div class="hero-right">
-      <div class="hero-photo-wrap">
-        <img
-          src="./Assets/PXL_20241221_015350870.PORTRAIT.jpg"
-          alt="Kiran Vellanki"
-          class="hero-photo"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-        />
-        <div class="hero-photo-placeholder" style="display:none">
-          <div class="avatar-circle">.</div>
-          <span>Kiran Vellanki's photo</span>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
-<!-- ABOUT -->
+<!-- ABOUT — identical -->
 <section id="about">
   <div class="section-label">01 — About</div>
   <h2>Who I am</h2>
@@ -1574,7 +1684,7 @@ h1, h2, p, span, a, li, label, button {
   </div>
 </section>
 
-<!-- EXPERIENCE -->
+<!-- EXPERIENCE — identical -->
 <section id="experience">
   <div class="section-label">02 — Experience</div>
   <h2>Where I've worked</h2>
@@ -1614,7 +1724,7 @@ h1, h2, p, span, a, li, label, button {
   </div>
 </section>
 
-<!-- SKILLS -->
+<!-- SKILLS — identical -->
 <section id="skills">
   <div class="section-label">03 — Skills</div>
   <h2>What I work with</h2>
@@ -1677,7 +1787,7 @@ h1, h2, p, span, a, li, label, button {
   </div>
 </section>
 
-<!-- PROJECTS -->
+<!-- PROJECTS — identical -->
 <section id="projects">
   <div class="section-label">04 — Projects</div>
   <h2>Things I've built</h2>
@@ -1726,7 +1836,7 @@ h1, h2, p, span, a, li, label, button {
   </div>
 </section>
 
-<!-- CONTACT -->
+<!-- CONTACT — identical -->
 <section id="contact">
   <div class="section-label">05 — Contact</div>
   <h2>Let's talk</h2>
@@ -1780,7 +1890,7 @@ h1, h2, p, span, a, li, label, button {
   </div>
 </section>
 
-<!-- FOOTER  -->
+<!-- FOOTER — identical -->
 <footer>
   <span class="footer-copy">© 2026 Kiran Vellanki.</span>
 </footer>
@@ -1788,7 +1898,7 @@ h1, h2, p, span, a, li, label, button {
 <script>
 // ── THEME TOGGLE ──────────────────────────────
 const root = document.documentElement;
-const saved = localStorage.getItem('kv-theme') || 'light';
+const saved = localStorage.getItem('kv-theme') || 'dark';
 root.setAttribute('data-theme', saved);
 
 document.getElementById('themeToggle').addEventListener('click', () => {
